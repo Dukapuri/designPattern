@@ -1,24 +1,24 @@
-import Grimpan from "./AbstractGrimpan";
-import ChromeGrimpan from "./ChromeGrimpan";
+import Grimpan from "./AbstractGrimpan.js";
+import ChromeGrimpan from "./ChromeGrimpan.js";
 import {
   ChromeGrimpanHistory,
   IEGrimpanHistory,
   SafariGrimpanHistory,
-} from "./GrimpanHistory";
+} from "./GrimpanHistory.js";
 import {
   ChromeGrimpanMenu,
   IEGrimpanMenu,
   SafariGrimpanMenu,
-} from "./GrimpanMenu";
-import IEGrimpan from "./IEGrimpan";
-import SafariGrimpan from "./SafariGrimpan";
+} from "./GrimpanMenu.js";
+import IEGrimpan from "./IEGrimpan.js";
+import SafariGrimpan from "./SafariGrimpan.js";
 
 export abstract class AbstractGrimpanFactory {
   static createGrimpan(): Grimpan {
     throw new Error("하위 클래스에서 구현하셔야 합니다.");
   }
 
-  static createGrimpanMenu(grimpan: Grimpan) {
+  static createGrimpanMenu(grimpan: Grimpan, dom: HTMLElement) {
     throw new Error("하위 클래스에서 구현하셔야 합니다.");
   }
 
@@ -32,8 +32,8 @@ export class ChromeGrimpanFactory extends AbstractGrimpanFactory {
     return ChromeGrimpan.getInstance();
   }
 
-  static override createGrimpanMenu(grimpan: ChromeGrimpan) {
-    return ChromeGrimpanMenu.getInstance(grimpan);
+  static override createGrimpanMenu(grimpan: ChromeGrimpan, dom: HTMLElement) {
+    return ChromeGrimpanMenu.getInstance(grimpan, dom);
   }
 
   static override createGrimpanHistory(grimpan: ChromeGrimpan) {
@@ -46,8 +46,8 @@ export class IEGrimpanFactory extends AbstractGrimpanFactory {
     return IEGrimpan.getInstance();
   }
 
-  static override createGrimpanMenu(grimpan: IEGrimpan) {
-    return IEGrimpanMenu.getInstance(grimpan);
+  static override createGrimpanMenu(grimpan: IEGrimpan, dom: HTMLElement) {
+    return IEGrimpanMenu.getInstance(grimpan, dom);
   }
 
   static override createGrimpanHistory(grimpan: ChromeGrimpan) {
@@ -60,11 +60,11 @@ export class SafariGrimpanFactory extends AbstractGrimpanFactory {
     return SafariGrimpan.getInstance();
   }
 
-  static override createGrimpanMenu(grimpan: IEGrimpan) {
-    return SafariGrimpanMenu.getInstance(grimpan);
+  static override createGrimpanMenu(grimpan: SafariGrimpan, dom: HTMLElement) {
+    return SafariGrimpanMenu.getInstance(grimpan, dom);
   }
 
-  static override createGrimpanHistory(grimpan: ChromeGrimpan) {
+  static override createGrimpanHistory(grimpan: SafariGrimpan) {
     return SafariGrimpanHistory.getInstance(grimpan);
   }
 }
