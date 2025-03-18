@@ -27,6 +27,8 @@ export class IEGrimpanHistory extends GrimpanHistory {
         }
         return this.instance;
     }
+    undo() { }
+    redo() { }
 }
 export class ChromeGrimpanHistory extends GrimpanHistory {
     static instance;
@@ -37,6 +39,8 @@ export class ChromeGrimpanHistory extends GrimpanHistory {
         }
         return this.instance;
     }
+    undo() { }
+    redo() { }
 }
 export class SafariGrimpanHistory extends GrimpanHistory {
     static instance;
@@ -47,4 +51,6 @@ export class SafariGrimpanHistory extends GrimpanHistory {
         }
         return this.instance;
     }
+    undo() { }
+    redo() { }
 }
