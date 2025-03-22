@@ -10,12 +10,21 @@ import {
   RectangleSelectCommand,
   SaveCommand,
 } from "./commands/index.js";
-import { GrimpanMenuBtn, GrimpanMenuInput } from "./GrimpanMenuBtn.js";
+import {
+  GrimpanMenuBtn,
+  GrimpanMenuInput,
+  GrimpanMenuSaveBtn,
+} from "./GrimpanMenuBtn.js";
 
 export abstract class GrimpanMenu {
   grimpan: Grimpan;
   dom: HTMLElement;
   colorBtn!: HTMLInputElement;
+  saveSetting = {
+    blur: false,
+    invert: false,
+    grayScale: false,
+  };
 
   protected constructor(grimpan: Grimpan, dom: HTMLElement) {
     this.grimpan = grimpan;
@@ -163,8 +172,21 @@ export class ChromeGrimpanMenu extends GrimpanMenu {
         return btn;
       }
       case "save": {
-        const btn = new GrimpanMenuBtn.Builder(this, "저장", type)
+        const btn = new GrimpanMenuSaveBtn.Builder(this, "저장", type)
           .setOnClick(this.onClickSave.bind(this))
+          .setFilterListeners({
+            blur: (e: Event) => {
+              this.saveSetting.blur = (e.target as HTMLInputElement).checked;
+            },
+            invert: (e: Event) => {
+              this.saveSetting.invert = (e.target as HTMLInputElement).checked;
+            },
+            grayScale: (e: Event) => {
+              this.saveSetting.grayScale = (
+                e.target as HTMLInputElement
+              ).checked;
+            },
+          })
           .build();
         btn.draw();
         return btn;

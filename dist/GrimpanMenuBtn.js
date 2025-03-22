@@ -14,6 +14,12 @@ class GrimpanMenuElement {
         this.name = name;
         this.type = type;
     }
+    draw() {
+        const btn = this.createButton();
+        this.appendBeforeBtn();
+        this.appendToDom(btn);
+        this.appendAfterBtn();
+    }
 }
 export class GrimpanMenuInput extends GrimpanMenuElement {
     onChange;
@@ -23,7 +29,13 @@ export class GrimpanMenuInput extends GrimpanMenuElement {
         this.onChange = onChange;
         this.value = value;
     }
-    draw() {
+    appendToDom(btn) {
+        this.menu.colorBtn = btn;
+        this.menu.dom.append(btn);
+    }
+    appendBeforeBtn() { }
+    appendAfterBtn() { }
+    createButton() {
         const btn = document.createElement("input");
         btn.type = "color";
         btn.title = this.name;
@@ -31,8 +43,7 @@ export class GrimpanMenuInput extends GrimpanMenuElement {
         if (this.onChange) {
             btn.addEventListener("change", this.onChange.bind(this));
         }
-        this.menu.colorBtn = btn;
-        this.menu.dom.append(btn);
+        return btn;
     }
     static Builder = class GrimpanMenuInputBuilder extends GrimpanMenuElementBuilder {
         btn;
@@ -58,15 +69,20 @@ export class GrimpanMenuBtn extends GrimpanMenuElement {
         this.active = active;
         this.onClick = onClick;
     }
-    draw() {
+    createButton() {
         const btn = document.createElement("button");
         btn.textContent = this.name;
         btn.id = `${this.type}-btn`;
         if (this.onClick) {
             btn.addEventListener("click", this.onClick.bind(this));
         }
+        return btn;
+    }
+    appendBeforeBtn() { }
+    appendToDom(btn) {
         this.menu.dom.append(btn);
     }
+    appendAfterBtn() { }
     static Builder = class GrimpanMenuBtnBuilder extends GrimpanMenuElementBuilder {
         btn;
         constructor(menu, name, type) {
@@ -82,4 +98,47 @@ export class GrimpanMenuBtn extends GrimpanMenuElement {
             return this;
         }
     };
+}
+export class GrimpanMenuSaveBtn extends GrimpanMenuBtn {
+    onClickBlur;
+    onClickInvert;
+    onClickGrayScale;
+    constructor(menu, name, type, onClick, active) {
+        super(menu, name, type);
+        this.active = active;
+        this.onClick = onClick;
+    }
+    static Builder = class GrimpanMenuSaveBtnBuilder extends GrimpanMenuElementBuilder {
+        btn;
+        constructor(menu, name, type) {
+            super();
+            this.btn = new GrimpanMenuSaveBtn(menu, name, type);
+        }
+        setOnClick(onClick) {
+            this.btn.onClick = onClick;
+            return this;
+        }
+        setActive(active) {
+            this.btn.active = active;
+            return this;
+        }
+        setFilterListeners(listeners) {
+            this.btn.onClickBlur = listeners.blur;
+            this.btn.onClickInvert = listeners.invert;
+            this.btn.onClickGrayScale = listeners.grayScale;
+            return this;
+        }
+    };
+    appendBeforeBtn() {
+        this.drawInput("블러", this.onClickBlur);
+        this.drawInput("반전", this.onClickInvert);
+        this.drawInput("흑백", this.onClickGrayScale);
+    }
+    drawInput(title, onChange) {
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.title = title;
+        input.addEventListener("change", onChange.bind(this));
+        this.menu.dom.append(input);
+    }
 }
