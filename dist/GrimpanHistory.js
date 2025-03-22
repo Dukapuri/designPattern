@@ -1,3 +1,4 @@
+import { SubscriptionManager } from "./Observer.js";
 class HistoryStack extends Array {
     clone() {
         return this.slice();
@@ -9,7 +10,7 @@ export class GrimpanHistory {
     constructor(grimpan) {
         this.grimpan = grimpan;
         this.stack = new HistoryStack();
-        this.grimpan.saveCompleteObserver.subscribe({
+        SubscriptionManager.getInstance().subscribe("saveComplete", {
             name: "history",
             publish: this.afterSaveComplete.bind(this),
         });
@@ -24,7 +25,7 @@ export class GrimpanHistory {
         console.log("afterSaveComplete This is GrimpanHistory");
     }
     cancleSaveCompleteAlarm() {
-        this.grimpan.saveCompleteObserver.unsubscribe("history");
+        SubscriptionManager.getInstance().unsubscribe("saveComplete", "history");
     }
     static getInstance(grimpan) { }
 }

@@ -1,5 +1,6 @@
 import { BackCommand, SaveCommand, } from "./commands/index.js";
 import { GrimpanMenuBtn, GrimpanMenuInput, GrimpanMenuSaveBtn, } from "./GrimpanMenuBtn.js";
+import { SubscriptionManager } from "./Observer.js";
 export class GrimpanMenu {
     grimpan;
     dom;
@@ -12,7 +13,7 @@ export class GrimpanMenu {
     constructor(grimpan, dom) {
         this.grimpan = grimpan;
         this.dom = dom;
-        this.grimpan.saveCompleteObserver.subscribe({
+        SubscriptionManager.getInstance().subscribe("saveComplete", {
             name: "menu",
             publish: this.afterSaveComplete.bind(this),
         });
@@ -33,7 +34,7 @@ export class GrimpanMenu {
         console.log("afterSaveComplete This is GrimpanMenu");
     }
     cancleSaveCompleteAlarm() {
-        this.grimpan.saveCompleteObserver.unsubscribe("menu");
+        SubscriptionManager.getInstance().unsubscribe("saveComplete", "menu");
     }
 }
 export class IEGrimpanMenu extends GrimpanMenu {
