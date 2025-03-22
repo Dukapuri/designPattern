@@ -17,6 +17,10 @@ export abstract class GrimpanHistory {
   protected constructor(grimpan: Grimpan) {
     this.grimpan = grimpan;
     this.stack = new HistoryStack();
+    this.grimpan.saveCompleteObserver.subscribe({
+      name: "history",
+      publish: this.afterSaveComplete.bind(this),
+    });
   }
 
   abstract undo(): void;
@@ -28,6 +32,14 @@ export abstract class GrimpanHistory {
 
   setStack(stack: HistoryStack) {
     this.stack = stack.clone();
+  }
+
+  afterSaveComplete() {
+    console.log("afterSaveComplete This is GrimpanHistory");
+  }
+
+  cancleSaveCompleteAlarm() {
+    this.grimpan.saveCompleteObserver.unsubscribe("history");
   }
 
   abstract initialize(): void;

@@ -29,14 +29,19 @@ export abstract class GrimpanMenu {
   protected constructor(grimpan: Grimpan, dom: HTMLElement) {
     this.grimpan = grimpan;
     this.dom = dom;
+    this.grimpan.saveCompleteObserver.subscribe({
+      name: "menu",
+      publish: this.afterSaveComplete.bind(this),
+    });
   }
 
   abstract initialize(types: BtnType[]): void;
+  static getInstance(grimpan: Grimpan, dom: HTMLElement) {}
+
   setActiveBtn(btn: GrimpanMode) {
     document.querySelector(".active")?.classList.remove("active");
     document.querySelector(`#${btn}-btn`)?.classList.add("active");
   }
-  static getInstance(grimpan: Grimpan, dom: HTMLElement) {}
 
   executeCommand(command: Command) {
     // 비활성화 로직 수정 권한에 대한 로직을 넣어도 좋을 것 같음
@@ -44,6 +49,14 @@ export abstract class GrimpanMenu {
     //   return;
     // }
     command.execute();
+  }
+
+  afterSaveComplete() {
+    console.log("afterSaveComplete This is GrimpanMenu");
+  }
+
+  cancleSaveCompleteAlarm() {
+    this.grimpan.saveCompleteObserver.unsubscribe("menu");
   }
 }
 

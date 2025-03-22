@@ -12,18 +12,28 @@ export class GrimpanMenu {
     constructor(grimpan, dom) {
         this.grimpan = grimpan;
         this.dom = dom;
+        this.grimpan.saveCompleteObserver.subscribe({
+            name: "menu",
+            publish: this.afterSaveComplete.bind(this),
+        });
     }
+    static getInstance(grimpan, dom) { }
     setActiveBtn(btn) {
         document.querySelector(".active")?.classList.remove("active");
         document.querySelector(`#${btn}-btn`)?.classList.add("active");
     }
-    static getInstance(grimpan, dom) { }
     executeCommand(command) {
         // 비활성화 로직 수정 권한에 대한 로직을 넣어도 좋을 것 같음
         // if (비활성화) {
         //   return;
         // }
         command.execute();
+    }
+    afterSaveComplete() {
+        console.log("afterSaveComplete This is GrimpanMenu");
+    }
+    cancleSaveCompleteAlarm() {
+        this.grimpan.saveCompleteObserver.unsubscribe("menu");
     }
 }
 export class IEGrimpanMenu extends GrimpanMenu {

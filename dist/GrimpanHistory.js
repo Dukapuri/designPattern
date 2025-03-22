@@ -9,12 +9,22 @@ export class GrimpanHistory {
     constructor(grimpan) {
         this.grimpan = grimpan;
         this.stack = new HistoryStack();
+        this.grimpan.saveCompleteObserver.subscribe({
+            name: "history",
+            publish: this.afterSaveComplete.bind(this),
+        });
     }
     getStack() {
         return this.stack.clone();
     }
     setStack(stack) {
         this.stack = stack.clone();
+    }
+    afterSaveComplete() {
+        console.log("afterSaveComplete This is GrimpanHistory");
+    }
+    cancleSaveCompleteAlarm() {
+        this.grimpan.saveCompleteObserver.unsubscribe("history");
     }
     static getInstance(grimpan) { }
 }
