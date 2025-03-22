@@ -31,7 +31,6 @@ export class PenSelectCommand extends Command {
     }
     execute() {
         this.grimpan.menu.setActiveBtn("pen");
-        this.grimpan.setMode("pen");
     }
 }
 export class EraserSelectCommand extends Command {
@@ -43,7 +42,6 @@ export class EraserSelectCommand extends Command {
     }
     execute() {
         this.grimpan.menu.setActiveBtn("eraser");
-        this.grimpan.setMode("eraser");
     }
 }
 export class CircleSelectCommand extends Command {
@@ -55,7 +53,6 @@ export class CircleSelectCommand extends Command {
     }
     execute() {
         this.grimpan.menu.setActiveBtn("circle");
-        this.grimpan.setMode("circle");
     }
 }
 export class RectangleSelectCommand extends Command {
@@ -67,7 +64,6 @@ export class RectangleSelectCommand extends Command {
     }
     execute() {
         this.grimpan.menu.setActiveBtn("rectangle");
-        this.grimpan.setMode("rectangle");
     }
 }
 export class PipetteSelectCommand extends Command {
@@ -79,6 +75,16 @@ export class PipetteSelectCommand extends Command {
     }
     execute() {
         this.grimpan.menu.setActiveBtn("pipette");
-        this.grimpan.setMode("pipette");
+    }
+}
+export class SaveCommand extends Command {
+    grimpan;
+    name = "save";
+    constructor(grimpan) {
+        super();
+        this.grimpan = grimpan;
+    }
+    execute() {
+        this.grimpan.saveStrategy();
     }
 }
