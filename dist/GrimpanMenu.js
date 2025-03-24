@@ -1,4 +1,4 @@
-import { BackCommand, SaveCommand, } from "./commands/index.js";
+import { BackCommand, ForwardCommand, SaveCommand, SaveHistoryCommand, } from "./commands/index.js";
 import { GrimpanMenuBtn, GrimpanMenuInput, GrimpanMenuSaveBtn, } from "./GrimpanMenuBtn.js";
 import { SubscriptionManager } from "./Observer.js";
 export class GrimpanMenu {
@@ -52,9 +52,13 @@ export class ChromeGrimpanMenu extends GrimpanMenu {
     initialize(types) {
         types.forEach(this.drawButtonByType.bind(this));
         this.grimpan.setMode("pen");
+        this.executeCommand(new SaveHistoryCommand(this.grimpan));
     }
     onClickBack() {
         this.executeCommand(new BackCommand(this.grimpan.history)); // { name: 'back' };
+    }
+    onClickForward() {
+        this.executeCommand(new ForwardCommand(this.grimpan.history));
     }
     onClickPen() {
         this.grimpan.setMode("pen");
@@ -85,9 +89,7 @@ export class ChromeGrimpanMenu extends GrimpanMenu {
             }
             case "forward": {
                 const btn = new GrimpanMenuBtn.Builder(this, "앞으로", type)
-                    .setOnClick(() => {
-                    // 앞으로가기 작업
-                })
+                    .setOnClick(this.onClickForward.bind(this))
                     .build();
                 btn.draw();
                 return btn;

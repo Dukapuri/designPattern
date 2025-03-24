@@ -11,6 +11,14 @@ export class Grimpan {
     color;
     active;
     saveStrategy;
+    makeSnapshot() {
+        const snapshot = {
+            color: this.color,
+            mode: this.mode,
+            data: this.canvas.toDataURL("image/png"),
+        };
+        return Object.freeze(snapshot); // preventExtensions : 새로운 속성 추가하는 것을 막음 seal : 속성 추가 및 삭제 막음 freeze : 속성 추가, 삭제, 수정 막음
+    }
     constructor(canvas) {
         if (!canvas || !(canvas instanceof HTMLCanvasElement)) {
             throw new Error("canvas 엘리먼트를 입력하세요");
@@ -46,6 +54,9 @@ export class Grimpan {
                 break;
             }
         }
+    }
+    invoke(command) {
+        command.execute();
     }
     setSaveStrategy(imageType) {
         switch (imageType) {
@@ -132,6 +143,21 @@ export class Grimpan {
         if (this.menu.colorBtn) {
             this.menu.colorBtn.value = color;
         }
+    }
+    resetState() {
+        this.color = "#fff";
+        this.mode = new PenMode(this);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+    restore({ color, mode, data, }) {
+        const image = new Image();
+        image.src = data;
+        image.onload = () => {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
+        };
+        this.setColor(color);
+        this.setMode(mode);
     }
 }
 export class ChromeGrimpan extends Grimpan {

@@ -1,3 +1,4 @@
+import { Command } from "./commands/index.js";
 import {
   BlurFilter,
   DefaultFilter,
@@ -29,6 +30,15 @@ export abstract class Grimpan {
   color: string;
   active: boolean;
   saveStrategy!: () => void;
+
+  makeSnapshot() {
+    const snapshot = {
+      color: this.color,
+      mode: this.mode,
+      data: this.canvas.toDataURL("image/png"),
+    };
+    return Object.freeze(snapshot); // preventExtensions : 새로운 속성 추가하는 것을 막음 seal : 속성 추가 및 삭제 막음 freeze : 속성 추가, 삭제, 수정 막음
+  }
 
   protected constructor(canvas: HTMLElement | null) {
     if (!canvas || !(canvas instanceof HTMLCanvasElement)) {
@@ -73,6 +83,10 @@ export abstract class Grimpan {
         break;
       }
     }
+  }
+
+  invoke(command: Command) {
+    command.execute();
   }
 
   setSaveStrategy(imageType: "png" | "jpg" | "webp") {
@@ -170,6 +184,31 @@ export abstract class Grimpan {
     if (this.menu.colorBtn) {
       this.menu.colorBtn.value = color;
     }
+  }
+
+  resetState() {
+    this.color = "#fff";
+    this.mode = new PenMode(this);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  restore({
+    color,
+    mode,
+    data,
+  }: {
+    color: string;
+    mode: string;
+    data: string;
+  }) {
+    const image = new Image();
+    image.src = data;
+    image.onload = () => {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
+    };
+    this.setColor(color);
+    this.setMode(mode as GrimpanMode);
   }
 }
 

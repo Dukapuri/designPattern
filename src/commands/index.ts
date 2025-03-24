@@ -88,3 +88,15 @@ export class SaveCommand extends Command {
     this.grimpan.saveStrategy();
   }
 }
+
+export class SaveHistoryCommand extends Command {
+  name = "saveHistory";
+
+  constructor(private grimpan: Grimpan) {
+    super();
+  }
+
+  override execute(): void {
+    this.grimpan.history.saveHistory();
+  }
+}

@@ -1,4 +1,4 @@
-import { CircleSelectCommand, EraserSelectCommand, PenSelectCommand, PipetteSelectCommand, RectangleSelectCommand, } from "../commands/index.js";
+import { CircleSelectCommand, EraserSelectCommand, PenSelectCommand, PipetteSelectCommand, RectangleSelectCommand, SaveHistoryCommand, } from "../commands/index.js";
 const convertToHex = (color) => {
     if (color < 0) {
         return 0;
@@ -17,6 +17,9 @@ export class Mode {
     grimpan;
     constructor(grimpan) {
         this.grimpan = grimpan;
+    }
+    invoke(command) {
+        command.execute();
     }
 }
 export class PenMode extends Mode {
@@ -42,8 +45,10 @@ export class PenMode extends Mode {
         this.grimpan.ctx.moveTo(e.offsetX, e.offsetY);
     }
     onMouseup(e) {
+        if (this.grimpan.active) {
+            this.invoke(new SaveHistoryCommand(this.grimpan));
+        }
         this.grimpan.active = false;
-        // 히스토리 저장
     }
 }
 export class EraserMode extends Mode {
@@ -68,8 +73,10 @@ export class EraserMode extends Mode {
         this.grimpan.ctx.stroke();
     }
     onMouseup(e) {
+        if (this.grimpan.active) {
+            this.invoke(new SaveHistoryCommand(this.grimpan));
+        }
         this.grimpan.active = false;
-        // 히스토리 저장
     }
 }
 export class CircleMode extends Mode {
@@ -79,7 +86,12 @@ export class CircleMode extends Mode {
     }
     onMousedown(e) { }
     onMousemove(e) { }
-    onMouseup(e) { }
+    onMouseup(e) {
+        if (this.grimpan.active) {
+            this.invoke(new SaveHistoryCommand(this.grimpan));
+        }
+        this.grimpan.active = false;
+    }
 }
 export class RectangleMode extends Mode {
     constructor(grimpan) {
@@ -88,7 +100,12 @@ export class RectangleMode extends Mode {
     }
     onMousedown(e) { }
     onMousemove(e) { }
-    onMouseup(e) { }
+    onMouseup(e) {
+        if (this.grimpan.active) {
+            this.invoke(new SaveHistoryCommand(this.grimpan));
+        }
+        this.grimpan.active = false;
+    }
 }
 export class PipetteMode extends Mode {
     constructor(grimpan) {
