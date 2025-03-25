@@ -1,6 +1,22 @@
 import { Grimpan } from "../Grimpan.js";
 import { GrimpanHistory } from "../GrimpanHistory.js";
 
+export class Invoker {
+  constructor(private readonly command: { run(): void }) {}
+  invoke() {
+    this.command.run();
+  }
+}
+
+export class Adapter {
+  constructor(private readonly command: Command) {}
+  run() {
+    this.command.execute();
+  }
+}
+
+// new Invoker(new Adapter(new BackCommand({} as GrimpanHistory)));
+
 export abstract class Command {
   abstract execute(): void;
 }
