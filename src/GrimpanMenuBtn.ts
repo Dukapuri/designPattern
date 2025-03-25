@@ -1,4 +1,5 @@
 import { BtnType, GrimpanMenu } from "./GrimpanMenu.js";
+import { MenuDrawVisitor } from "./MenuDrawVisitor.js";
 
 abstract class GrimpanMenuElementBuilder {
   btn!: GrimpanMenuElement;
@@ -10,31 +11,21 @@ abstract class GrimpanMenuElementBuilder {
 }
 
 abstract class GrimpanMenuElement {
-  protected menu: GrimpanMenu;
-  protected name: string;
-  protected type: BtnType;
+  public menu: GrimpanMenu;
+  public name: string;
+  public type: BtnType;
   protected constructor(menu: GrimpanMenu, name: string, type: BtnType) {
     this.menu = menu;
     this.name = name;
     this.type = type;
   }
 
-  draw(): void {
-    const btn = this.createButton();
-    this.appendBeforeBtn();
-    this.appendToDom(btn);
-    this.appendAfterBtn();
-  }
-
-  abstract createButton(): HTMLElement;
-  abstract appendBeforeBtn(): void;
-  abstract appendToDom(btn: HTMLElement): void;
-  abstract appendAfterBtn(): void;
+  abstract draw(visitor: MenuDrawVisitor): HTMLElement;
 }
 
 export class GrimpanMenuInput extends GrimpanMenuElement {
-  private onChange?: (e: Event) => void;
-  private value?: string | number;
+  public onChange?: (e: Event) => void;
+  public value?: string | number;
 
   private constructor(
     menu: GrimpanMenu,
@@ -46,25 +37,6 @@ export class GrimpanMenuInput extends GrimpanMenuElement {
     super(menu, name, type);
     this.onChange = onChange;
     this.value = value;
-  }
-
-  override appendToDom(btn: HTMLInputElement): void {
-    this.menu.colorBtn = btn;
-    this.menu.dom.append(btn);
-  }
-
-  override appendBeforeBtn(): void {}
-  override appendAfterBtn(): void {}
-
-  override createButton(): HTMLElement {
-    const btn = document.createElement("input");
-    btn.type = "color";
-    btn.title = this.name;
-    btn.id = "color-btn";
-    if (this.onChange) {
-      btn.addEventListener("change", this.onChange.bind(this));
-    }
-    return btn;
   }
 
   static Builder = class GrimpanMenuInputBuilder extends GrimpanMenuElementBuilder {
@@ -83,12 +55,20 @@ export class GrimpanMenuInput extends GrimpanMenuElement {
       this.btn.value = value;
       return this;
     }
+
+    override build(): GrimpanMenuInput {
+      return this.btn;
+    }
   };
+
+  override draw(visitor: MenuDrawVisitor): HTMLInputElement {
+    return visitor.drawInput(this);
+  }
 }
 
 export class GrimpanMenuBtn extends GrimpanMenuElement {
-  protected onClick?: () => void;
-  protected active?: boolean;
+  public onClick?: () => void;
+  public active?: boolean;
 
   protected constructor(
     menu: GrimpanMenu,
@@ -102,23 +82,9 @@ export class GrimpanMenuBtn extends GrimpanMenuElement {
     this.onClick = onClick;
   }
 
-  createButton(): HTMLButtonElement {
-    const btn = document.createElement("button");
-    btn.textContent = this.name;
-    btn.id = `${this.type}-btn`;
-    if (this.onClick) {
-      btn.addEventListener("click", this.onClick.bind(this));
-    }
-    return btn;
+  override draw(visitor: MenuDrawVisitor): HTMLButtonElement {
+    return visitor.drawBtn(this);
   }
-
-  appendBeforeBtn() {}
-
-  appendToDom(btn: HTMLButtonElement) {
-    this.menu.dom.append(btn);
-  }
-
-  appendAfterBtn() {}
 
   static Builder = class GrimpanMenuBtnBuilder extends GrimpanMenuElementBuilder {
     override btn: GrimpanMenuBtn;
@@ -136,13 +102,17 @@ export class GrimpanMenuBtn extends GrimpanMenuElement {
       this.btn.active = active;
       return this;
     }
+
+    override build(): GrimpanMenuBtn {
+      return this.btn;
+    }
   };
 }
 
 export class GrimpanMenuSaveBtn extends GrimpanMenuBtn {
-  private onClickBlur!: (e: Event) => void;
-  private onClickInvert!: (e: Event) => void;
-  private onClickGrayScale!: (e: Event) => void;
+  public onClickBlur!: (e: Event) => void;
+  public onClickInvert!: (e: Event) => void;
+  public onClickGrayScale!: (e: Event) => void;
 
   private constructor(
     menu: GrimpanMenu,
@@ -181,19 +151,13 @@ export class GrimpanMenuSaveBtn extends GrimpanMenuBtn {
       this.btn.onClickGrayScale = listeners.grayScale;
       return this;
     }
+
+    override build(): GrimpanMenuSaveBtn {
+      return this.btn;
+    }
   };
 
-  override appendBeforeBtn(): void {
-    this.drawInput("블러", this.onClickBlur);
-    this.drawInput("반전", this.onClickInvert);
-    this.drawInput("흑백", this.onClickGrayScale);
-  }
-
-  drawInput(title: string, onChange: (e: Event) => void) {
-    const input = document.createElement("input");
-    input.type = "checkbox";
-    input.title = title;
-    input.addEventListener("change", onChange.bind(this));
-    this.menu.dom.append(input);
+  override draw(visitor: MenuDrawVisitor): HTMLButtonElement {
+    return visitor.drawSaveBtn(this);
   }
 }
