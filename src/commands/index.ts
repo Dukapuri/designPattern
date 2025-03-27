@@ -48,6 +48,34 @@ export abstract class Command {
   abstract name: string;
   abstract execute(): void;
 }
+
+function countCommand(
+  value: typeof BackCommand,
+  context: ClassDecoratorContext
+) {
+  return class extends value {
+    override execute() {
+      super.execute();
+      if (counter[this.name]) {
+        counter[this.name]++;
+      } else {
+        counter[this.name] = 1;
+      }
+    }
+  };
+}
+
+function logger(value: typeof BackCommand, context: ClassDecoratorContext) {
+  return class extends value {
+    override execute() {
+      console.log(this.name + ` 명령을 실행합니다.`);
+      super.execute();
+    }
+  };
+}
+
+@countCommand
+@logger
 export class BackCommand extends Command {
   name = "back";
 
@@ -60,8 +88,8 @@ export class BackCommand extends Command {
   }
 }
 
-new ExecuteCounter(new ExecuteLogger(new BackCommand({} as GrimpanHistory)));
-new ExecuteLogger(new ExecuteCounter(new BackCommand({} as GrimpanHistory)));
+// new ExecuteCounter(new ExecuteLogger(new BackCommand({} as GrimpanHistory)));
+// new ExecuteLogger(new ExecuteCounter(new BackCommand({} as GrimpanHistory)));
 
 export class ForwardCommand extends Command {
   name = "forward";
