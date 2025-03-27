@@ -17,6 +17,31 @@ export class Adapter {
     }
 }
 // new Invoker(new Adapter(new BackCommand({} as GrimpanHistory)));
+class CommandDecorate {
+    command;
+    name;
+    constructor(command) {
+        this.command = command;
+        this.name = command.name;
+    }
+}
+export const counter = {};
+class ExecuteLogger extends CommandDecorate {
+    execute() {
+        this.command.execute();
+    }
+}
+class ExecuteCounter extends CommandDecorate {
+    execute() {
+        this.command.execute();
+        if (counter[this.command.name]) {
+            counter[this.command.name]++;
+        }
+        else {
+            counter[this.command.name] = 1;
+        }
+    }
+}
 export class Command {
 }
 export class BackCommand extends Command {
@@ -30,6 +55,8 @@ export class BackCommand extends Command {
         this.history.undo();
     }
 }
+new ExecuteCounter(new ExecuteLogger(new BackCommand({})));
+new ExecuteLogger(new ExecuteCounter(new BackCommand({})));
 export class ForwardCommand extends Command {
     history;
     name = "forward";
