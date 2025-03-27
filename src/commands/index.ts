@@ -123,20 +123,55 @@ export class EraserSelectCommand extends Command {
   }
 }
 
-export class CircleSelectCommand extends Command {
+interface SelectCommand {
+  name: string;
+  grimpan: Grimpan;
+  execute(): void;
+}
+
+export class PremiumCommandProxy {
+  name: string;
+  constructor(private readonly command: SelectCommand) {
+    this.name = command.name;
+  }
+  execute() {
+    // if (!this.command.loaded) {
+    //   this.command.load();
+    // }
+    if (this.command.grimpan.isPremium) {
+      this.command.execute();
+    } else {
+      alert("프리미엄 이용자만 가능합니다.");
+    }
+  }
+}
+
+export class CircleSelectCommand extends Command implements SelectCommand {
   name = "circleSelect";
-  constructor(private grimpan: Grimpan) {
+  loaded = false;
+
+  constructor(public grimpan: Grimpan) {
     super();
+  }
+
+  load() {
+    this.loaded = true;
   }
   override execute() {
     this.grimpan.menu.setActiveBtn("circle");
   }
 }
 
-export class RectangleSelectCommand extends Command {
+export class RectangleSelectCommand extends Command implements SelectCommand {
   name = "rectangleSelect";
-  constructor(private grimpan: Grimpan) {
+  loaded = false;
+
+  constructor(public grimpan: Grimpan) {
     super();
+  }
+
+  load() {
+    this.loaded = true;
   }
   override execute() {
     this.grimpan.menu.setActiveBtn("rectangle");

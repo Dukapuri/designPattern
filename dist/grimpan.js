@@ -7,6 +7,7 @@ export class Grimpan {
     ctx;
     history;
     menu;
+    isPremium = false;
     mode;
     color;
     active;

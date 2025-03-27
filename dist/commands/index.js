@@ -162,12 +162,35 @@ export class EraserSelectCommand extends Command {
         this.grimpan.menu.setActiveBtn("eraser");
     }
 }
+export class PremiumCommandProxy {
+    command;
+    name;
+    constructor(command) {
+        this.command = command;
+        this.name = command.name;
+    }
+    execute() {
+        // if (!this.command.loaded) {
+        //   this.command.load();
+        // }
+        if (this.command.grimpan.isPremium) {
+            this.command.execute();
+        }
+        else {
+            alert("프리미엄 이용자만 가능합니다.");
+        }
+    }
+}
 export class CircleSelectCommand extends Command {
     grimpan;
     name = "circleSelect";
+    loaded = false;
     constructor(grimpan) {
         super();
         this.grimpan = grimpan;
+    }
+    load() {
+        this.loaded = true;
     }
     execute() {
         this.grimpan.menu.setActiveBtn("circle");
@@ -176,9 +199,13 @@ export class CircleSelectCommand extends Command {
 export class RectangleSelectCommand extends Command {
     grimpan;
     name = "rectangleSelect";
+    loaded = false;
     constructor(grimpan) {
         super();
         this.grimpan = grimpan;
+    }
+    load() {
+        this.loaded = true;
     }
     execute() {
         this.grimpan.menu.setActiveBtn("rectangle");

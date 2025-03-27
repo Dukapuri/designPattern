@@ -26,6 +26,7 @@ export abstract class Grimpan {
   ctx: CanvasRenderingContext2D;
   history!: GrimpanHistory;
   menu!: GrimpanMenu;
+  isPremium = false;
   mode!: Mode;
   color: string;
   active: boolean;
